@@ -56,10 +56,10 @@
     [self addBackgroundDimmed];
     [self showBackgroundDimmed];
     
-    NSString *photoLibraryTxt = @"Photo Library";
-    NSString *takePhotoOrVideoTxt = @"Take Photo";
-    NSString *uploadFileTxt = @"Upload File";
-    NSString *cancelTxt = @"Cancel";
+    NSString *photoLibraryTxt = @"Выбрать из библиотеки";
+    NSString *takePhotoOrVideoTxt = @"Сделать снимок";
+    NSString *uploadFileTxt = @"Загрузить файл";
+    NSString *cancelTxt = @"Отмена";
     self.actionSheet = [[JVTActionSheetView alloc] init];
     self.actionSheet.delegate = self;
     
@@ -235,12 +235,12 @@
 }
 
 -(void)showAllertToGetPermissionWithTitle:(NSString*)title {
-    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:@"To give permissions tap on 'Change Settings' button" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:@"Чтобы предоставить необходимые права нажмите на кнопку'Изменить настройки'" preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Отмена" style:UIAlertActionStyleCancel handler:nil];
     [alertController addAction:cancelAction];
     
-    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Change Settings" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Изменить настройки" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
     }];
     [alertController addAction:settingsAction];
