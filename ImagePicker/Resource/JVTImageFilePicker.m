@@ -18,6 +18,7 @@
 #import "JVTActionSheetView.h"
 #import "EXTScope.h"
 #import "JVTCameraAccesebility.h"
+#import <Photos/Photos.h>
 
 #define DEFAULT_IMAGE_SIZE CGSizeMake(600, 600)
 
@@ -134,53 +135,61 @@
 #pragma mark - type of action presses
 
 - (void)photoLibraryPress {
-    @weakify(self);
-    self.imagePickerController = [[UIImagePickerController alloc] init];
-    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-    [self.presentedFromController presentViewController:self.imagePickerController animated:YES completion:nil];
-    
-    self.imagePickerController.finalizationBlock = ^(UIImagePickerController *picker, NSDictionary *info) {
-        @strongify(self);
-        UIImage *image = (UIImage *)[info valueForKey:UIImagePickerControllerOriginalImage];
-        
-        [self showPreviewForImage:image];
-    };
-    self.imagePickerController.cancellationBlock = ^(UIImagePickerController *picker) {
-        [picker dismissViewControllerAnimated:YES
-                                   completion:^{
-                                   }];
-    };
+    [self checkAccessToPhotoWithSuccess:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @weakify(self);
+            self.imagePickerController = [[UIImagePickerController alloc] init];
+            self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+            [self.presentedFromController presentViewController:self.imagePickerController animated:YES completion:nil];
+            
+            self.imagePickerController.finalizationBlock = ^(UIImagePickerController *picker, NSDictionary *info) {
+                @strongify(self);
+                UIImage *image = (UIImage *)[info valueForKey:UIImagePickerControllerOriginalImage];
+                
+                [self showPreviewForImage:image];
+            };
+            self.imagePickerController.cancellationBlock = ^(UIImagePickerController *picker) {
+                [picker dismissViewControllerAnimated:YES
+                                           completion:^{
+                                           }];
+            };
+        });
+    }];
 }
 
 - (void)takePhotoOrVideoPress {
-    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-    if (authStatus == AVAuthorizationStatusAuthorized || authStatus == AVAuthorizationStatusNotDetermined) {
-        @weakify(self);
-        self.imagePickerController = [[UIImagePickerController alloc] init];
-        self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-        self.imagePickerController.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
-        self.imagePickerController.allowsEditing = NO;
-        [self.presentedFromController presentViewController:self.imagePickerController animated:YES completion:nil];
-        
-        self.imagePickerController.finalizationBlock = ^(UIImagePickerController *picker, NSDictionary *info) {
-            @strongify(self);
-            UIImage *image = (UIImage *)[info valueForKey:UIImagePickerControllerOriginalImage];
-            
-            [self didPressSendOnImage:image];
-            
-        };
-        self.imagePickerController.cancellationBlock = ^(UIImagePickerController *picker) {
-            [picker dismissViewControllerAnimated:YES
-                                       completion:^{
-                                       }];
-        };
-        
-    } else if (authStatus == AVAuthorizationStatusDenied) {
-        [self presentPermissionDenied];
-    } else if (authStatus == AVAuthorizationStatusRestricted) {
-        // restricted, normally won't happen
-        [self presentPermissionDenied];
-    }
+    [self checkAccessToCameraWithSuccess:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+            if (authStatus == AVAuthorizationStatusAuthorized || authStatus == AVAuthorizationStatusNotDetermined) {
+                @weakify(self);
+                self.imagePickerController = [[UIImagePickerController alloc] init];
+                self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+                self.imagePickerController.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
+                self.imagePickerController.allowsEditing = NO;
+                [self.presentedFromController presentViewController:self.imagePickerController animated:YES completion:nil];
+                
+                self.imagePickerController.finalizationBlock = ^(UIImagePickerController *picker, NSDictionary *info) {
+                    @strongify(self);
+                    UIImage *image = (UIImage *)[info valueForKey:UIImagePickerControllerOriginalImage];
+                    
+                    [self didPressSendOnImage:image];
+                    
+                };
+                self.imagePickerController.cancellationBlock = ^(UIImagePickerController *picker) {
+                    [picker dismissViewControllerAnimated:YES
+                                               completion:^{
+                                               }];
+                };
+                
+            } else if (authStatus == AVAuthorizationStatusDenied) {
+                [self presentPermissionDenied];
+            } else if (authStatus == AVAuthorizationStatusRestricted) {
+                // restricted, normally won't happen
+                [self presentPermissionDenied];
+            }
+        });
+    }];
 }
 
 - (void)uploadFilePress {
@@ -188,6 +197,57 @@
     documentMenuViewController.delegate = self;
     
     [self.presentedFromController presentViewController:documentMenuViewController animated:YES completion:nil];
+}
+
+//MARK: Helpers
+
+- (void)checkAccessToPhotoWithSuccess:(void(^)(void))success {
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    if (status == PHAuthorizationStatusAuthorized) {
+        success();
+    } else {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            if (status == PHAuthorizationStatusAuthorized) {
+                success();
+            } else if (status != PHAuthorizationStatusAuthorized) {
+                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
+                [self showAllertToGetPermissionWithTitle:accessDescription];
+            }
+        }];
+    }
+}
+
+- (void)checkAccessToCameraWithSuccess:(void(^)(void))success {
+    NSString *mediaType = AVMediaTypeVideo;
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:mediaType];
+    if(authStatus == AVAuthorizationStatusAuthorized) {
+        success();
+    } else {
+        [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
+            if(granted){
+                success();
+            } else {
+                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
+                [self showAllertToGetPermissionWithTitle:accessDescription];
+            }
+        }];
+    }
+}
+
+-(void)showAllertToGetPermissionWithTitle:(NSString*)title {
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:@"To give permissions tap on 'Change Settings' button" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:cancelAction];
+    
+    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Change Settings" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+    }];
+    [alertController addAction:settingsAction];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.presentedFromController presentViewController:alertController animated:YES completion:nil];
+    });
 }
 
 #pragma mark - documents picker
