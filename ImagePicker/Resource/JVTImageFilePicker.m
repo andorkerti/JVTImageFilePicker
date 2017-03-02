@@ -139,7 +139,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             @weakify(self);
             self.imagePickerController = [[UIImagePickerController alloc] init];
-            self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+            self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             [self.presentedFromController presentViewController:self.imagePickerController animated:YES completion:nil];
             
             self.imagePickerController.finalizationBlock = ^(UIImagePickerController *picker, NSDictionary *info) {
@@ -235,12 +235,12 @@
 }
 
 -(void)showAllertToGetPermissionWithTitle:(NSString*)title {
-    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:@"Чтобы предоставить необходимые права нажмите на кнопку'Изменить настройки'" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Доступ к фото" message:@"Чтобы загружать с фотоплёнки, приложению Мой доктор нужно иметь доступ к вашим фотографиям. Перейдите в настройки, чтобы предоставить доступ." preferredStyle:UIAlertControllerStyleAlert]; 
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Отмена" style:UIAlertActionStyleCancel handler:nil];
     [alertController addAction:cancelAction];
     
-    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Изменить настройки" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Разрешить" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
     }];
     [alertController addAction:settingsAction];
