@@ -235,7 +235,7 @@
 }
 
 -(void)showAllertToGetPermissionWithTitle:(NSString*)title {
-    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Доступ к фото" message:@"Чтобы загружать с фотоплёнки, приложению Мой доктор нужно иметь доступ к вашим фотографиям. Перейдите в настройки, чтобы предоставить доступ." preferredStyle:UIAlertControllerStyleAlert]; 
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Доступ к фотографиям" message:@"Чтобы загружать с фотоплёнки, приложению Мой доктор нужно иметь доступ к вашим фотографиям. Перейдите в настройки, чтобы предоставить доступ." preferredStyle:UIAlertControllerStyleAlert]; 
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Отмена" style:UIAlertActionStyleCancel handler:nil];
     [alertController addAction:cancelAction];
