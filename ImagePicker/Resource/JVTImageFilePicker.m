@@ -210,8 +210,8 @@
             if (status == PHAuthorizationStatusAuthorized) {
                 success();
             } else if (status != PHAuthorizationStatusAuthorized) {
-                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
-                [self showAllertToGetPermissionWithTitle:accessDescription];
+//                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
+                [self showAllertToGetPermissionWithTitle:@"Доступ к фотографиям" message:@"Чтобы загружать с фотоплёнки, приложению Мой доктор нужно иметь доступ к вашим фотографиям. Перейдите в настройки, чтобы предоставить доступ."];
             }
         }];
     }
@@ -227,15 +227,15 @@
             if(granted){
                 success();
             } else {
-                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
-                [self showAllertToGetPermissionWithTitle:accessDescription];
+//                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
+                [self showAllertToGetPermissionWithTitle:@"Доступ к камере" message: @"Чтобы делать снимки, приложению Мой доктор нужно иметь доступ к вашей камере. Перейдите в настройки, чтобы предоставить доступ."];
             }
         }];
     }
 }
 
--(void)showAllertToGetPermissionWithTitle:(NSString*)title {
-    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Доступ к фотографиям" message:@"Чтобы загружать с фотоплёнки, приложению Мой доктор нужно иметь доступ к вашим фотографиям. Перейдите в настройки, чтобы предоставить доступ." preferredStyle:UIAlertControllerStyleAlert]; 
+-(void)showAllertToGetPermissionWithTitle:(NSString*)title message:(NSString*)message {
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Отмена" style:UIAlertActionStyleCancel handler:nil];
     [alertController addAction:cancelAction];
