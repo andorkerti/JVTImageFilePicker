@@ -341,9 +341,6 @@
     [self hideBackgroundDimmed];
     [self.recetImagesCollection removeFromSuperview];
     self.recetImagesCollection = nil;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didDismissFilesPicker)]) {
-        [self.delegate didDismissFilesPicker];
-    }
     NSLog(@"JVTImageFilesPicker dismissed");
 }
 
