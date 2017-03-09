@@ -432,6 +432,7 @@
 					ED7A8E411CB3B09800A39614 = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = PH85M24H5K;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.iCloud = {
 								enabled = 0;
@@ -681,8 +682,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mc.JV.ImagePicker.;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "e16e9ca9-d300-4821-87e9-a403189f0404";
-				PROVISIONING_PROFILE_SPECIFIER = MemoriaXc8;
 			};
 			name = Debug;
 		};
@@ -700,7 +699,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mc.JV.ImagePicker.;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "7c603ede-813f-426b-9acf-ecd9208e16cd";
 			};
 			name = Release;
 		};
