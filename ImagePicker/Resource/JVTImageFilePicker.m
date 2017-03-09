@@ -56,10 +56,10 @@
     [self addBackgroundDimmed];
     [self showBackgroundDimmed];
     
-    NSString *photoLibraryTxt = @"Выбрать из библиотеки";
-    NSString *takePhotoOrVideoTxt = @"Сделать снимок";
-    NSString *uploadFileTxt = @"Загрузить файл";
-    NSString *cancelTxt = @"Отмена";
+    NSString *photoLibraryTxt = @"Saját fotók";
+    NSString *takePhotoOrVideoTxt = @"Fotó készítse";
+    NSString *uploadFileTxt = @"Fájl kiválasztása";
+    NSString *cancelTxt = @"Mégsem";
     self.actionSheet = [[JVTActionSheetView alloc] init];
     self.actionSheet.delegate = self;
     
@@ -210,8 +210,8 @@
             if (status == PHAuthorizationStatusAuthorized) {
                 success();
             } else if (status != PHAuthorizationStatusAuthorized) {
-//                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
-                [self showAllertToGetPermissionWithTitle:@"Доступ к фотографиям" message:@"Чтобы загружать с фотоплёнки, приложению Мой доктор нужно иметь доступ к вашим фотографиям. Перейдите в настройки, чтобы предоставить доступ."];
+                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryUsageDescription"];
+                [self showAllertToGetPermissionWithTitle:@"" message:accessDescription];
             }
         }];
     }
@@ -227,8 +227,8 @@
             if(granted){
                 success();
             } else {
-//                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
-                [self showAllertToGetPermissionWithTitle:@"Доступ к камере" message: @"Чтобы делать снимки, приложению Мой доктор нужно иметь доступ к вашей камере. Перейдите в настройки, чтобы предоставить доступ."];
+                NSString *accessDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
+                [self showAllertToGetPermissionWithTitle:@"" message:accessDescription];
             }
         }];
     }
@@ -237,10 +237,10 @@
 -(void)showAllertToGetPermissionWithTitle:(NSString*)title message:(NSString*)message {
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Отмена" style:UIAlertActionStyleCancel handler:nil];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Mégsem" style:UIAlertActionStyleCancel handler:nil];
     [alertController addAction:cancelAction];
     
-    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Разрешить" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"Beállítások módosítása" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
     }];
     [alertController addAction:settingsAction];
